@@ -1,0 +1,406 @@
+Script started on 2024-05-19 11:50:49+00:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="156" LINES="41"]
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# lsblk -f
+NAME   FSTYPE   LABEL           UUID                                 FSAVAIL FSUSE% MOUNTPOINT
+loop0  squashfs                                                            0   100% /snap/lxd/24061
+loop1  squashfs                                                            0   100% /snap/core20/2264
+loop2  squashfs                                                            0   100% /snap/snapd/21465
+sda                                                                                 
+└─sda1 ext4     cloudimg-rootfs aa3e7602-80f6-48bd-9d37-542ec2a0f1b0   37.3G     4% /
+sdb    iso9660  cidata          2024-04-30-22-01-29-00                              
+sdc                                                                                 
+sdd                                                                                 
+sde                                                                                 
+sdf                                                                                 
+sdg                                                                                 
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm --zero-superblock --force /dev/sd{c,d,e,f,g}
+mdadm: Unrecognised md component device - /dev/sdc
+mdadm: Unrecognised md component device - /dev/sdd
+mdadm: Unrecognised md component device - /dev/sde
+mdadm: Unrecognised md component device - /dev/sdf
+mdadm: Unrecognised md component device - /dev/sdg
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm --create --verbose /dev/md127 -l 10 -n 4 /dev/sd{c,d,e,f}
+mdadm: layout defaults to n2
+mdadm: layout defaults to n2
+mdadm: chunk size defaults to 512K
+mdadm: size set to 253952K
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md127 started.
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# at /proc/mdstat  [1@c
+Personalities : [linear] [multipath] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10] 
+md127 : active raid10 sdf[3] sde[2] sdd[1] sdc[0]
+      507904 blocks super 1.2 512K chunks 2 near-copies [4/4] [UUUU]
+      [===============>.....]  resync = 77.8% (396224/507904) finish=0.0min speed=28301K/sec
+      
+unused devices: <none>
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm -D /dev/md127
+/dev/md127:
+           Version : 1.2
+     Creation Time : Sun May 19 11:51:17 2024
+        Raid Level : raid10
+        Array Size : 507904 (496.00 MiB 520.09 MB)
+     Used Dev Size : 253952 (248.00 MiB 260.05 MB)
+      Raid Devices : 4
+     Total Devices : 4
+       Persistence : Superblock is persistent
+
+       Update Time : Sun May 19 11:51:35 2024
+             State : clean 
+    Active Devices : 4
+   Working Devices : 4
+    Failed Devices : 0
+     Spare Devices : 0
+
+            Layout : near=2
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : mdadm:127  (local to host mdadm)
+              UUID : 06d5adf5:af38a03a:4c830f79:a5fcf422
+            Events : 17
+
+    Number   Major   Minor   RaidDevice State
+       0       8       32        0      active sync set-A   /dev/sdc
+       1       8       48        1      active sync set-B   /dev/sdd
+       2       8       64        2      active sync set-A   /dev/sde
+       3       8       80        3      active sync set-B   /dev/sdf
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# echo "DEVICE partitions" > /etc/mdadm/mdadm.conf
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' >> /etc/mdadm/mdadm.conf
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# update-initramfs -u
+update-initramfs: Generating /boot/initrd.img-5.4.0-177-generic
+
+
+
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# 
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# 
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# 
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mkfs.ext4 /dev/md127
+mke2fs 1.45.5 (07-Jan-2020)
+Creating filesystem with 126976 4k blocks and 126976 inodes
+Filesystem UUID: 4f9eb7bf-1b81-43d1-9595-bcce899557c9
+Superblock backups stored on blocks: 
+	32768, 98304
+
+Allocating group tables: 0/4   done                            
+Writing inode tables: 0/4   done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: 0/4   done
+
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mkdit /tmp/md127/[1P /tmp/md127/r /tmp/md127/
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mount /dev/md127 /tmp/md127/
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# cp -r /var/log/*  /tmp/md127/
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# ls -lshhh /tmp/md127/
+total 544K
+4.0K drwxr-xr-x 2 root root 4.0K May 19 11:53 [0m[01;34mapt[0m
+ 12K -rw-r----- 1 root root 9.6K May 19 11:53 auth.log
+   0 -rw-r----- 1 root root    0 May 19 11:53 btmp
+8.0K -rw-r----- 1 root root 4.3K May 19 11:53 cloud-init-output.log
+108K -rw-r----- 1 root root 108K May 19 11:53 cloud-init.log
+4.0K drwxr-xr-x 2 root root 4.0K May 19 11:53 [01;34mdist-upgrade[0m
+ 52K -rw-r--r-- 1 root root  50K May 19 11:53 dmesg
+4.0K -rw-r--r-- 1 root root 1.3K May 19 11:53 dpkg.log
+4.0K drwxr-xr-x 3 root root 4.0K May 19 11:53 [01;34mjournal[0m
+ 64K -rw-r----- 1 root root  64K May 19 11:53 kern.log
+4.0K drwxr-xr-x 2 root root 4.0K May 19 11:53 [01;34mlandscape[0m
+4.0K -rw-r--r-- 1 root root 286K May 19 11:53 lastlog
+ 16K drwx------ 2 root root  16K May 19 11:52 [01;34mlost+found[0m
+4.0K drwx------ 2 root root 4.0K May 19 11:53 [01;34mprivate[0m
+248K -rw-r----- 1 root root 246K May 19 11:53 syslog
+4.0K drwxr-x--- 2 root root 4.0K May 19 11:53 [01;34munattended-upgrades[0m
+4.0K -rw-r--r-- 1 root root 2.7K May 19 11:53 wtmp
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# ls -lshhh /tmp/md127/[K[K[K[K[K[K
+total 24K
+4.0K drwxr-xr-x 9 root    root    4.0K May 19 11:53 [0m[01;34mmd127[0m
+4.0K drwx------ 3 root    root    4.0K May 19 11:49 [01;34msnap-private-tmp[0m
+4.0K drwx------ 3 root    root    4.0K May 19 11:49 [01;34msystemd-private-29d9f1a6e96a4521ac9453f5b26138df-ModemManager.service-DzQfDh[0m
+4.0K drwx------ 3 root    root    4.0K May 19 11:49 [01;34msystemd-private-29d9f1a6e96a4521ac9453f5b26138df-systemd-logind.service-YUXtug[0m
+4.0K drwx------ 3 root    root    4.0K May 19 11:49 [01;34msystemd-private-29d9f1a6e96a4521ac9453f5b26138df-systemd-resolved.service-hGzq2h[0m
+4.0K -rwxrwxr-x 1 vagrant vagrant  793 May 19 11:49 [01;32mvagrant-shell[0m
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm /dev/md127 --fail /dev/sdc
+mdadm: set /dev/sdc faulty in /dev/md127
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# cat /proc/mdstat
+Personalities : [linear] [multipath] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10] 
+md127 : active raid10 sdf[3] sde[2] sdd[1] sdc[0](F)
+      507904 blocks super 1.2 512K chunks 2 near-copies [4/3] [_UUU]
+      
+unused devices: <none>
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm -D /dev/md127
+/dev/md127:
+           Version : 1.2
+     Creation Time : Sun May 19 11:51:17 2024
+        Raid Level : raid10
+        Array Size : 507904 (496.00 MiB 520.09 MB)
+     Used Dev Size : 253952 (248.00 MiB 260.05 MB)
+      Raid Devices : 4
+     Total Devices : 4
+       Persistence : Superblock is persistent
+
+       Update Time : Sun May 19 11:54:03 2024
+             State : clean, degraded 
+    Active Devices : 3
+   Working Devices : 3
+    Failed Devices : 1
+     Spare Devices : 0
+
+            Layout : near=2
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : mdadm:127  (local to host mdadm)
+              UUID : 06d5adf5:af38a03a:4c830f79:a5fcf422
+            Events : 21
+
+    Number   Major   Minor   RaidDevice State
+       -       0        0        0      removed
+       1       8       48        1      active sync set-B   /dev/sdd
+       2       8       64        2      active sync set-A   /dev/sde
+       3       8       80        3      active sync set-B   /dev/sdf
+
+       0       8       32        -      faulty   /dev/sdc
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm /dev/md127 --remove /dev/sdc
+mdadm: hot removed /dev/sdc from /dev/md127
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm /dev/md127 --add /dev/sdg
+mdadm: added /dev/sdg
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# cat /proc/mdstat
+Personalities : [linear] [multipath] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10] 
+md127 : active raid10 sdg[4] sdf[3] sde[2] sdd[1]
+      507904 blocks super 1.2 512K chunks 2 near-copies [4/3] [_UUU]
+      [===================>.]  recovery = 95.3% (242688/253952) finish=0.0min speed=48537K/sec
+      
+unused devices: <none>
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm -D /dev/md127
+/dev/md127:
+           Version : 1.2
+     Creation Time : Sun May 19 11:51:17 2024
+        Raid Level : raid10
+        Array Size : 507904 (496.00 MiB 520.09 MB)
+     Used Dev Size : 253952 (248.00 MiB 260.05 MB)
+      Raid Devices : 4
+     Total Devices : 4
+       Persistence : Superblock is persistent
+
+       Update Time : Sun May 19 11:54:37 2024
+             State : clean 
+    Active Devices : 4
+   Working Devices : 4
+    Failed Devices : 0
+     Spare Devices : 0
+
+            Layout : near=2
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : mdadm:127  (local to host mdadm)
+              UUID : 06d5adf5:af38a03a:4c830f79:a5fcf422
+            Events : 41
+
+    Number   Major   Minor   RaidDevice State
+       4       8       96        0      active sync set-A   /dev/sdg
+       1       8       48        1      active sync set-B   /dev/sdd
+       2       8       64        2      active sync set-A   /dev/sde
+       3       8       80        3      active sync set-B   /dev/sdf
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm /dev/md127 --add /dev/sdc
+mdadm: added /dev/sdc
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# cat /proc/mdstat
+Personalities : [linear] [multipath] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10] 
+md127 : active raid10 sdc[5](S) sdg[4] sdf[3] sde[2] sdd[1]
+      507904 blocks super 1.2 512K chunks 2 near-copies [4/4] [UUUU]
+      
+unused devices: <none>
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm -D /dev/md127
+/dev/md127:
+           Version : 1.2
+     Creation Time : Sun May 19 11:51:17 2024
+        Raid Level : raid10
+        Array Size : 507904 (496.00 MiB 520.09 MB)
+     Used Dev Size : 253952 (248.00 MiB 260.05 MB)
+      Raid Devices : 4
+     Total Devices : 5
+       Persistence : Superblock is persistent
+
+       Update Time : Sun May 19 11:54:54 2024
+             State : clean 
+    Active Devices : 4
+   Working Devices : 5
+    Failed Devices : 0
+     Spare Devices : 1
+
+            Layout : near=2
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : mdadm:127  (local to host mdadm)
+              UUID : 06d5adf5:af38a03a:4c830f79:a5fcf422
+            Events : 42
+
+    Number   Major   Minor   RaidDevice State
+       4       8       96        0      active sync set-A   /dev/sdg
+       1       8       48        1      active sync set-B   /dev/sdd
+       2       8       64        2      active sync set-A   /dev/sde
+       3       8       80        3      active sync set-B   /dev/sdf
+
+       5       8       32        -      spare   /dev/sdc
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# umount /dev/md127
+        
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm -S /dev/md127 
+mdadm: stopped /dev/md127
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm -S /dev/md127 [12Plsblk -fmdadm --zero-superblock --force /dev/sd{c,d,e,f,g}
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm --zero-superblock --force /dev/sd{c,d,e,f,g}
+[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[CS /dev/md127 [K-zero-superblock --force /dev/sd{c,d,e,f,g}
+[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Kmdadm --zero-superblock --force /dev/sd{c,d,e,f,g}
+[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[CS /dev/md127 [K[12Plsblk -f
+NAME   FSTYPE   LABEL           UUID                                 FSAVAIL FSUSE% MOUNTPOINT
+loop0  squashfs                                                            0   100% /snap/lxd/24061
+loop1  squashfs                                                            0   100% /snap/core20/2264
+loop2  squashfs                                                            0   100% /snap/snapd/21465
+sda                                                                                 
+└─sda1 ext4     cloudimg-rootfs aa3e7602-80f6-48bd-9d37-542ec2a0f1b0   37.3G     4% /
+sdb    iso9660  cidata          2024-04-30-22-01-29-00                              
+sdc                                                                                 
+sdd                                                                                 
+sde                                                                                 
+sdf                                                                                 
+sdg                                                                                 
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# 
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# 
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# 
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm --zero-superblock --force /dev/sd{c,d,e,f,g}
+mdadm: Unrecognised md component device - /dev/sdc
+mdadm: Unrecognised md component device - /dev/sdd
+mdadm: Unrecognised md component device - /dev/sde
+mdadm: Unrecognised md component device - /dev/sdf
+mdadm: Unrecognised md component device - /dev/sdg
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm --create --verbose /dev/md127 -l 10 -n 4 /dev/sd{c,d,e,f}
+mdadm: layout defaults to n2
+mdadm: layout defaults to n2
+mdadm: chunk size defaults to 512K
+mdadm: size set to 253952K
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md127 started.
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# echo "DEVICE partitions" > /etc/mdadm/mdadm.conf
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' >> /etc/mdadm/mdadm.conf
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# update-initramfs -u
+update-initramfs: Generating /boot/initrd.img-5.4.0-177-generic
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# parted -s /dev/md127 mklabel gpt
+7 mkpart primary ext4 40% 60%
+parted /dev/md127 mkpart primary ext4 60% 80%
+parted /dev/md127 mkpart primary ext4 80% 100%]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# parted /dev/md127 mkpart primary ext4 0% 20%
+Information: You may need to update /etc/fstab.
+
+
+                                                                          
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# parted /dev/md127 mkpart primary ext4 20% 40%
+Information: You may need to update /etc/fstab.
+
+
+                                                                          
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# parted /dev/md127 mkpart primary ext4 40% 60%
+Information: You may need to update /etc/fstab.
+
+
+                                                                          
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# parted /dev/md127 mkpart primary ext4 60% 80%
+Information: You may need to update /etc/fstab.
+
+
+                                                                          
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# parted /dev/md127 mkpart primary ext4 80% 100%
+Information: You may need to update /etc/fstab.
+
+
+                                                                          
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# for i in $(seq 1 5); do sudo mkfs.ext4 /dev/md127p$i; done
+mke2fs 1.45.5 (07-Jan-2020)
+Creating filesystem with 25088 4k blocks and 25088 inodes
+
+Allocating group tables: 0/1   done                            
+Writing inode tables: 0/1   done                            
+Creating journal (1024 blocks): done
+Writing superblocks and filesystem accounting information: 0/1   done
+
+mke2fs 1.45.5 (07-Jan-2020)
+Creating filesystem with 25344 4k blocks and 25344 inodes
+
+Allocating group tables: 0/1   done                            
+Writing inode tables: 0/1   done                            
+Creating journal (1024 blocks): done
+Writing superblocks and filesystem accounting information: 0/1   done
+
+mke2fs 1.45.5 (07-Jan-2020)
+Creating filesystem with 25600 4k blocks and 25600 inodes
+
+Allocating group tables: 0/1   done                            
+Writing inode tables: 0/1   done                            
+Creating journal (1024 blocks): done
+Writing superblocks and filesystem accounting information: 0/1   done
+
+mke2fs 1.45.5 (07-Jan-2020)
+Creating filesystem with 25344 4k blocks and 25344 inodes
+
+Allocating group tables: 0/1   done                            
+Writing inode tables: 0/1   done                            
+Creating journal (1024 blocks): done
+Writing superblocks and filesystem accounting information: 0/1   done
+
+mke2fs 1.45.5 (07-Jan-2020)
+Creating filesystem with 25088 4k blocks and 25088 inodes
+
+Allocating group tables: 0/1   done                            
+Writing inode tables: 0/1   done                            
+Creating journal (1024 blocks): done
+Writing superblocks and filesystem accounting information: 0/1   done
+
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mkdir -p /raid/part{1,2,3,4,5}
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# for i in $(seq 1 5); do echo "/dev/md127p$i /raid/part$i ext4 defaults 0 0" >> /etc/fstab; done
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mount -a
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# 
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# 
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# mount | grep /dev/md 127
+[01;31m[K/dev/md127[m[Kp1 on /raid/part1 type ext4 (rw,relatime,stripe=256)
+[01;31m[K/dev/md127[m[Kp2 on /raid/part2 type ext4 (rw,relatime,stripe=256)
+[01;31m[K/dev/md127[m[Kp3 on /raid/part3 type ext4 (rw,relatime,stripe=256)
+[01;31m[K/dev/md127[m[Kp4 on /raid/part4 type ext4 (rw,relatime,stripe=256)
+[01;31m[K/dev/md127[m[Kp5 on /raid/part5 type ext4 (rw,relatime,stripe=256)
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# lsblk -f
+NAME        FSTYPE            LABEL           UUID                                 FSAVAIL FSUSE% MOUNTPOINT
+loop0       squashfs                                                                     0   100% /snap/lxd/24061
+loop1       squashfs                                                                     0   100% /snap/core20/2264
+loop2       squashfs                                                                     0   100% /snap/snapd/21465
+sda                                                                                               
+└─sda1      ext4              cloudimg-rootfs aa3e7602-80f6-48bd-9d37-542ec2a0f1b0   37.3G     4% /
+sdb         iso9660           cidata          2024-04-30-22-01-29-00                              
+sdc         linux_raid_member mdadm:127        68902ebc-5741-3eda-c85a-d41463c3b358                
+└─md127                                                                                           
+  ├─md127p1 ext4                              ab827783-4610-49c4-b60b-b99eedaff1cb     84M     0% /raid/part1
+  ├─md127p2 ext4                              65256b05-c6a8-4f23-b991-4306bec7833b   84.9M     0% /raid/part2
+  ├─md127p3 ext4                              912bde83-d0d9-4441-baee-3d635edccaea   85.8M     0% /raid/part3
+  ├─md127p4 ext4                              85ecbb5b-4f95-4514-9e3c-40f91fad6806   84.9M     0% /raid/part4
+  └─md127p5 ext4                              b6f26010-2f21-4176-beb5-ce10e6403756     84M     0% /raid/part5
+sdd         linux_raid_member mdadm:127        68902ebc-5741-3eda-c85a-d41463c3b358                
+└─md127                                                                                           
+  ├─md127p1 ext4                              ab827783-4610-49c4-b60b-b99eedaff1cb     84M     0% /raid/part1
+  ├─md127p2 ext4                              65256b05-c6a8-4f23-b991-4306bec7833b   84.9M     0% /raid/part2
+  ├─md127p3 ext4                              912bde83-d0d9-4441-baee-3d635edccaea   85.8M     0% /raid/part3
+  ├─md127p4 ext4                              85ecbb5b-4f95-4514-9e3c-40f91fad6806   84.9M     0% /raid/part4
+  └─md127p5 ext4                              b6f26010-2f21-4176-beb5-ce10e6403756     84M     0% /raid/part5
+sde         linux_raid_member mdadm:127        68902ebc-5741-3eda-c85a-d41463c3b358                
+└─md127                                                                                           
+  ├─md127p1 ext4                              ab827783-4610-49c4-b60b-b99eedaff1cb     84M     0% /raid/part1
+  ├─md127p2 ext4                              65256b05-c6a8-4f23-b991-4306bec7833b   84.9M     0% /raid/part2
+  ├─md127p3 ext4                              912bde83-d0d9-4441-baee-3d635edccaea   85.8M     0% /raid/part3
+  ├─md127p4 ext4                              85ecbb5b-4f95-4514-9e3c-40f91fad6806   84.9M     0% /raid/part4
+  └─md127p5 ext4                              b6f26010-2f21-4176-beb5-ce10e6403756     84M     0% /raid/part5
+sdf         linux_raid_member mdadm:127        68902ebc-5741-3eda-c85a-d41463c3b358                
+└─md127                                                                                           
+  ├─md127p1 ext4                              ab827783-4610-49c4-b60b-b99eedaff1cb     84M     0% /raid/part1
+  ├─md127p2 ext4                              65256b05-c6a8-4f23-b991-4306bec7833b   84.9M     0% /raid/part2
+  ├─md127p3 ext4                              912bde83-d0d9-4441-baee-3d635edccaea   85.8M     0% /raid/part3
+  ├─md127p4 ext4                              85ecbb5b-4f95-4514-9e3c-40f91fad6806   84.9M     0% /raid/part4
+  └─md127p5 ext4                              b6f26010-2f21-4176-beb5-ce10e6403756     84M     0% /raid/part5
+sdg                                                                                               
+]0;root@mdadm: /home/vagrant root@mdadm:/home/vagrant# exit
+
+Script done on 2024-05-19 12:00:54+00:00 [COMMAND_EXIT_CODE="0"]

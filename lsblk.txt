@@ -1,0 +1,68 @@
+до
+root@mdam:/home/vagrant# lsblk -f
+NAME   FSTYPE   LABEL           UUID                                 FSAVAIL FSUSE% MOUNTPOINT
+loop0  squashfs                                                            0   100% /snap/lxd/24061
+loop1  squashfs                                                            0   100% /snap/core20/2264
+loop2  squashfs                                                            0   100% /snap/snapd/21465
+sda                                                                                 
+└─sda1 ext4     cloudimg-rootfs aa3e7602-80f6-48bd-9d37-542ec2a0f1b0   37.3G     4% /
+sdb    iso9660  cidata          2024-04-30-22-01-29-00                              
+sdc                                                                                 
+sdd                                                                                 
+sde                                                                                 
+sdf                                                                                 
+sdg 
+
+
+после
+root@mdam:/home/vagrant# mount | grep -e /dev/md127
+/dev/md127p1 on /raid/part1 type ext4 (rw,relatime,stripe=256)
+/dev/md127p3 on /raid/part3 type ext4 (rw,relatime,stripe=256)
+/dev/md127p2 on /raid/part2 type ext4 (rw,relatime,stripe=256)
+/dev/md127p5 on /raid/part5 type ext4 (rw,relatime,stripe=256)
+/dev/md127p4 on /raid/part4 type ext4 (rw,relatime,stripe=256)
+
+
+root@mdam:/home/vagrant# lsblk -f
+NAME        FSTYPE            LABEL           UUID                                 FSAVAIL FSUSE% MOUNTPOINT
+loop0       squashfs                                                                     0   100% /snap/lxd/24061
+loop1       squashfs                                                                     0   100% /snap/core20/2264
+loop2       squashfs                                                                     0   100% /snap/snapd/21465
+sda
+└─sda1      ext4              cloudimg-rootfs aa3e7602-80f6-48bd-9d37-542ec2a0f1b0   37.3G     4% /
+sdb         iso9660           cidata          2024-04-30-22-01-29-00
+sdc         linux_raid_member mdam:127        c35599a7-f800-9001-3c0c-d4a0ec1fa862
+└─md127
+  ├─md127p1 ext4                              91a1a912-e289-430d-be80-9c429d686f7d     84M     0% /raid/part1
+  ├─md127p2 ext4                              680a9158-53e2-4c9b-bab9-c6a846e63f67   84.9M     0% /raid/part2
+  ├─md127p3 ext4                              e0d15f09-770d-4439-87ed-286c0b6de925   85.8M     0% /raid/part3
+  ├─md127p4 ext4                              8b1ede2b-9133-4d1e-937c-2baef8d1157b   84.9M     0% /raid/part4
+  └─md127p5 ext4                              bbc4ed1a-3390-4a7b-a08b-1e643744d488     84M     0% /raid/part5
+sdd         linux_raid_member mdam:127        c35599a7-f800-9001-3c0c-d4a0ec1fa862
+└─md127
+  ├─md127p1 ext4                              91a1a912-e289-430d-be80-9c429d686f7d     84M     0% /raid/part1
+  ├─md127p2 ext4                              680a9158-53e2-4c9b-bab9-c6a846e63f67   84.9M     0% /raid/part2
+  ├─md127p3 ext4                              e0d15f09-770d-4439-87ed-286c0b6de925   85.8M     0% /raid/part3
+  ├─md127p4 ext4                              8b1ede2b-9133-4d1e-937c-2baef8d1157b   84.9M     0% /raid/part4
+  └─md127p5 ext4                              bbc4ed1a-3390-4a7b-a08b-1e643744d488     84M     0% /raid/part5
+sde         linux_raid_member mdam:127        c35599a7-f800-9001-3c0c-d4a0ec1fa862
+└─md127
+  ├─md127p1 ext4                              91a1a912-e289-430d-be80-9c429d686f7d     84M     0% /raid/part1
+  ├─md127p2 ext4                              680a9158-53e2-4c9b-bab9-c6a846e63f67   84.9M     0% /raid/part2
+  ├─md127p3 ext4                              e0d15f09-770d-4439-87ed-286c0b6de925   85.8M     0% /raid/part3
+  ├─md127p4 ext4                              8b1ede2b-9133-4d1e-937c-2baef8d1157b   84.9M     0% /raid/part4
+  └─md127p5 ext4                              bbc4ed1a-3390-4a7b-a08b-1e643744d488     84M     0% /raid/part5
+sdf         linux_raid_member mdam:127        c35599a7-f800-9001-3c0c-d4a0ec1fa862
+└─md127
+  ├─md127p1 ext4                              91a1a912-e289-430d-be80-9c429d686f7d     84M     0% /raid/part1
+  ├─md127p2 ext4                              680a9158-53e2-4c9b-bab9-c6a846e63f67   84.9M     0% /raid/part2
+  ├─md127p3 ext4                              e0d15f09-770d-4439-87ed-286c0b6de925   85.8M     0% /raid/part3
+  ├─md127p4 ext4                              8b1ede2b-9133-4d1e-937c-2baef8d1157b   84.9M     0% /raid/part4
+  └─md127p5 ext4                              bbc4ed1a-3390-4a7b-a08b-1e643744d488     84M     0% /raid/part5
+sdg         linux_raid_member mdam:127        c35599a7-f800-9001-3c0c-d4a0ec1fa862
+└─md127
+  ├─md127p1 ext4                              91a1a912-e289-430d-be80-9c429d686f7d     84M     0% /raid/part1
+  ├─md127p2 ext4                              680a9158-53e2-4c9b-bab9-c6a846e63f67   84.9M     0% /raid/part2
+  ├─md127p3 ext4                              e0d15f09-770d-4439-87ed-286c0b6de925   85.8M     0% /raid/part3
+  ├─md127p4 ext4                              8b1ede2b-9133-4d1e-937c-2baef8d1157b   84.9M     0% /raid/part4
+  └─md127p5 ext4                              bbc4ed1a-3390-4a7b-a08b-1e643744d488     84M     0% /raid/part5
